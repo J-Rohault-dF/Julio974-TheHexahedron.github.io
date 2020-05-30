@@ -10,6 +10,7 @@ a.broken:visited {
 	color: #a55858;
 }
 
-caption {background-color:#eaeaea}
+table.pollingtable {font-size:95%; line-height:14px; text-align:center; border-bottom: 2px solid #F0F0F0;}
+caption {background-color:#F0F0F0}
 td.cLRf {background-color:#0066CC; color:#fff; font-weight:bold}
 td.cLRs {background-color:#80B3E6; font-weight:bold}
