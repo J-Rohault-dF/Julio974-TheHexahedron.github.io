@@ -1,0 +1,11 @@
+body {
+	font-family: Century gothic
+}
+
+a.broken {
+	color: #ba0000
+}
+
+a.broken:visited {
+	color: #a55858
+}
