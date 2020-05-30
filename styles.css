@@ -11,14 +11,20 @@ a.broken:visited {
 }
 
 table.pollingtable {font-size:95%; line-height:14px; text-align:center; border-bottom: 2px solid #F0F0F0;}
+/* f for full color, s for semi (midpoint blend between the color and white), b for background (lightest of 10 midpoints between the color and white) */
 caption {background-color:#F0F0F0}
 td.cLRf {background-color:#0066CC; color:#fff; font-weight:bold}
 td.cLRs {background-color:#80B3E6; font-weight:bold}
+td.cLRb {background-color:#E8F1FA}
 td.cLREMf {background-color:#FFEB00; font-weight:bold}
 td.cLREMs {background-color:#FFF580; font-weight:bold}
+td.cLREMb {background-color:#FFFDE8}
 td.cPSf {background-color:#FF8080; font-weight:bold}
 td.cPSs {background-color:#FFC0C0; font-weight:bold}
+td.cPSb {background-color:#FFF3F3}
 td.cPCFf {background-color:#DD0000; color:#fff; font-weight:bold}
 td.cPCFs {background-color:#EE8080; font-weight:bold}
+td.cPCFb {background-color:#FCE8E8}
 td.cRNf {background-color:#0D378A; color:#fff; font-weight:bold}
 td.cRNs {background-color:#869BC5; font-weight:bold}
+td.cRNb {background-color:#E9EDF4}
