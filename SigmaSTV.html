@@ -34,7 +34,9 @@
 	<p style="margin-left:40px;"><span style="border-left:5px solid gainsboro;padding-left:2.5px;">Click on Tools>Macros>Σ_computeResults, and enter the number of seats to be elected in the prompting window. Wait for the script to count and re-attribute the ballots. At the end of each count, a window will open for you to copy (it is automatically formatted for posting on Discord). After the script is done, you can press Ctrl+Z to see previous count statuses and manually check the counts if needed.</span></p>
 
 	<h2>The script</h2>
-	<p>Version 1.0 (2020-06-05)</p>
+	<select name="versionNumber" size="1">
+		<option>Version 1.0 (2020-06-05)</option>
+	</select>
 	<textarea id="area">/** @OnlyCurrentDoc */
 
 
@@ -457,7 +459,7 @@ function Σ_computeResults() {
   ui.alert(finalToPrint)
   }
 		}</textarea>
-		<input onClick="copyText()">Click to copy</input>
+		<button type="button" onClick="copyText()">Click to copy!</input>
 		
 		<p>In case of a problem, bug, question, or suggestion, ask me! <a href="https://twitter.com/Julio974fr">@Julio974fr</a> on Twitter.</p>
 </body>
