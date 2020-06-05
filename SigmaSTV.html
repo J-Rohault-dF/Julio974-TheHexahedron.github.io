@@ -18,7 +18,7 @@
 		<li>Multiple quotas are available for use for multiple-seats elections, namely the Hare quota, the Droop quota, the Hagenbach-Bischoff quota, and the Imperiali quota.</li>
 		<li>Single-winner elections elect the candidate to reach the overall majority.</li>
 		<li>The surplus allocation is done using the <a href="https://en.wikipedia.org/wiki/Counting_single_transferable_votes#Gregory">Gregory method</a>, which may lead to fractional votes in further counts.</li>
-		<li>In case of a tie, the script breaks the tie using the Bucklin system: it counts second choices, then if the tie persists it counts the third choices, etc.. If the tie persists to the end, the script chooses a candidate at random.</li>
+		<li>In case of a tie, the script breaks the tie using the Bucklin system: it counts second choices, then if the tie persists it counts the third choices, etc. If the tie persists to the end, the script chooses a candidate at random.</li>
 		<li style="color:#E00">The script must run in under 6 minutes, or Google Scripts will automatically stop it. If it happens, rewind back to the initial state using Ctrl+Z and start again.</li>
 	</ul>
 	<h2>How to use it</h2>
@@ -37,6 +37,7 @@
 	<select name="versionNumber" size="1">
 		<option>Version 1.0 (2020-06-05)</option>
 	</select>
+	<br>
 	<textarea id="area">/** @OnlyCurrentDoc */
 
 
@@ -459,8 +460,9 @@ function Σ_computeResults() {
   ui.alert(finalToPrint)
   }
 		}</textarea>
-		<button type="button" onClick="copyText()">Click to copy!</input>
-		
+		<br>
+		<button type="button" onClick="copyText()">Click to copy!</button>
+		<br>
 		<p>In case of a problem, bug, question, or suggestion, ask me! <a href="https://twitter.com/Julio974fr">@Julio974fr</a> on Twitter.</p>
 </body>
 </html>
