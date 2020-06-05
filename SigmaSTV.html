@@ -3,6 +3,13 @@
 	<title>SigmaSTV — Julio974's website</title>
 	
 	<link rel="stylesheet" href="styles.css">
+	
+	<script>
+		function copyText() {
+			document.getElementById('area').select();
+			document.execCommand('copy');
+		}
+	</script>
 </head>
 <body>
 	<h1>ΣSTV</h1>
@@ -11,8 +18,8 @@
 		<li>Multiple quotas are available for use for multiple-seats elections, namely the Hare quota, the Droop quota, the Hagenbach-Bischoff quota, and the Imperiali quota.</li>
 		<li>Single-winner elections elect the candidate to reach the overall majority.</li>
 		<li>The surplus allocation is done using the <a href="https://en.wikipedia.org/wiki/Counting_single_transferable_votes#Gregory">Gregory method</a>, which may lead to fractional votes in further counts.</li>
-		<li>In case of a tie, the script breaks the tie using the Bucklin system: it counts second choices, then if the tie persists it conts the third choices, etc.. If the tie persists to the end, the script chooses a candidate at random.</li>
-		<li style="text-color:#A00">The script must run in under 6 minutes, or Google Scripts will automatically stop it. If it happens, rewind back to the initial state using Ctrl+Z and start again.</li>
+		<li>In case of a tie, the script breaks the tie using the Bucklin system: it counts second choices, then if the tie persists it counts the third choices, etc.. If the tie persists to the end, the script chooses a candidate at random.</li>
+		<li style="color:#E00">The script must run in under 6 minutes, or Google Scripts will automatically stop it. If it happens, rewind back to the initial state using Ctrl+Z and start again.</li>
 	</ul>
 	<h2>How to use it</h2>
 	<h3>From Google Forms</h3>
@@ -25,5 +32,433 @@
 	<p style="margin-left:40px;"><span style="border-left:5px solid gainsboro;padding-left:2.5px;">You can skip this step if you manually inputed the ballots from raw data. If the ballots are exported from Google Sheets: select the columns corresponding to the candidates of the race to compute the results of (if the candidates of the race are on the columns E to J, select the columns from E to J included), and select Tools>Macros>Σ_convertAnswers. Check all the candidates are there, and click "yes" to start. This script will overwrite the "Ballots" sheet. Once the script is finished, all the ballots are converted for this specific race, you can now move to the next part...</span></p>
 	<h3>Compute the results</h3>
 	<p style="margin-left:40px;"><span style="border-left:5px solid gainsboro;padding-left:2.5px;">Click on Tools>Macros>Σ_computeResults, and enter the number of seats to be elected in the prompting window. Wait for the script to count and re-attribute the ballots. At the end of each count, a window will open for you to copy (it is automatically formatted for posting on Discord). After the script is done, you can press Ctrl+Z to see previous count statuses and manually check the counts if needed.</span></p>
+
+	<h2>The script</h2>
+	<p>Version 1.0 (2020-06-05)</p>
+	<textarea id="area">/** @OnlyCurrentDoc */
+
+
+/*
+
+QUOTA NUMBER
+Change the number below to choose the quota
+
+1: Hare quota
+2: Droop quota
+3: Hagenbach-Bischoff quota
+4: Imperiali quota
+Any other value automatically puts it at the Hare quota.
+
+*/
+quotaNumber = 4
+
+
+
+
+
+
+function removeA(arr) {
+    var what, a = arguments, L = a.length, ax;
+    while (L > 1 && arr.length) {
+        what = a[--L];
+        while ((ax= arr.indexOf(what)) !== -1) {
+            arr.splice(ax, 1);
+        }
+    }
+    return arr;
+}
+
+function sum(obj) {
+  var sum = 0;
+  for (var el in obj) {
+    if (obj.hasOwnProperty(el)) {
+      sum += parseFloat(obj[el]);
+    }
+  }
+  return sum;
+}
+
+function getRandomArbitrary(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function shuffle(a) {
+    var j, x, i;
+    for (i = a.length - 1; i > 0; i--) {
+        j = Math.floor(Math.random() * (i + 1));
+        x = a[i];
+        a[i] = a[j];
+        a[j] = x;
+    }
+    return a;
+}
+
+// ^ All of these are straight from StackOverflow
+
+
+
+function Σ_convertAnswers() {
+  //Answers converter
+  var spreadsheet = SpreadsheetApp.getActive();
+  var ui = SpreadsheetApp.getUi();
+  
+  //Initialization
+  CF = spreadsheet.getActiveSheet().getActiveRange().getColumn()
+  CL = spreadsheet.getActiveSheet().getActiveRange().getLastColumn()
+  RL = spreadsheet.getActiveSheet().getActiveRange().getLastRow()
+  
+  console.log('Converting ballots between columns '+CF+' and '+CL+'.')
+  
+  prompt = 'The ballots will be converted between columns '+CF+' and '+CL+'. These are the candidates included:'
+  for (i=(CF-1);i<CL;i++) {
+    prompt = prompt + '\n' + (spreadsheet.getActiveSheet().getRange(1,i+1).getValue().match(/\[(.*?)\]/)[1])
+  }
+  prompt = prompt + '\n'+'Do you wish to convert these ballots?'
+  console.log(prompt)
+  
+  userAgrees = ui.alert(prompt,ui.ButtonSet.YES_NO)
+  if (userAgrees == ui.Button.NO) {console.log('User refused to continue');return 0}
+  
+  //Init part 2
+  
+  //Sheets
+  spreadsheet.getActiveSheet().setName('Answers')
+  
+  if (SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Ballots')) {
+    spreadsheet.setActiveSheet(spreadsheet.getSheetByName('Ballots'))
+    spreadsheet.deleteActiveSheet()
+  }
+  SpreadsheetApp.getActiveSpreadsheet().insertSheet('Ballots');
+  
+  spreadsheet.setActiveSheet(spreadsheet.getSheetByName('Answers'))
+  
+  spreadsheet.getActiveSheet().getRange(2,1).activate()
+  
+  //Get list of candidates
+  R = 1
+  candidatesList = []
+  line = spreadsheet.getActiveSheet().getRange(R,CF,1,(CL-CF+1)).getValues()[0]
+  for (i in line) {
+    candidatesList.push(line[i].match(/\[(.*?)\]/)[1])
+  }
+  
+  //Parsing ballots
+  
+  whole = spreadsheet.getActiveSheet().getRange(2,CF,(RL-1),(CL-CF+1)).getValues()
+  dates = spreadsheet.getActiveSheet().getRange(2,1,(RL-1),1).getValues()
+  wholeOutput = []
+  
+  for (i in whole) { //Parsing each row
+    line = whole[i]
+    if (dates[i] == '') {break}
+    
+    ordered = Array(candidatesList.length).fill('')
+    date = dates[i][0]
+    
+    for (i in line) { //Parsing each cell in a row
+      rank = line[i]
+      if (rank == '') {continue}
+      candidate = candidatesList[i]
+      ordered.splice(rank-1,1,candidate)
+    }
+    
+    ordered = ordered.filter(function (el) { //Filter the array
+      if (!((el == null) || (el == ''))) {return el}
+    })
+    
+    ordered = ordered.concat(Array(candidatesList.length-ordered.length).fill(''))
+    
+    ordered.unshift(date,1)
+    wholeOutput.push(ordered)
+  }
+  shuffle(wholeOutput)
+  spreadsheet.getSheetByName('Ballots').getRange(1,1,wholeOutput.length,(ordered.length)).setValues(wholeOutput)
+  
+  spreadsheet.setActiveSheet(spreadsheet.getSheetByName('Ballots'))
+}
+
+
+
+function reweightBallots(factor,candidate) {
+  var spreadsheet = SpreadsheetApp.getActive();
+  
+  spreadsheet.getActiveSheet().getRange(1,2).activate()
+  
+  firstChoices = spreadsheet.getActiveSheet().getRange(1,3,spreadsheet.getActiveSheet().getLastRow(),1).getValues()
+  weights = spreadsheet.getActiveSheet().getRange(1,2,spreadsheet.getActiveSheet().getLastRow(),1).getValues()
+  
+  for (i in firstChoices) {
+    cand = firstChoices[i][0]
+    weight = weights[i][0]
+    
+    if (cand == candidate) {
+      weights.splice(i,1,[weight*factor])
+    }
+  }
+  
+  spreadsheet.getActiveSheet().getRange(1,2,spreadsheet.getActiveSheet().getLastRow(),1).setValues(weights)
+}
+
+function countBallots(offset=0,restricted=[]) {
+  var spreadsheet = SpreadsheetApp.getActive();
+  cands = new Object()
+  
+  c=offset+3
+  spreadsheet.getActiveSheet().getRange(1,c).activate()
+  
+  colValues = spreadsheet.getActiveSheet().getRange(1,c,spreadsheet.getActiveSheet().getLastRow(),1).getValues()
+  weights = spreadsheet.getActiveSheet().getRange(1,2,spreadsheet.getActiveSheet().getLastRow(),1).getValues()
+  
+  for (i in colValues) {
+    cand = colValues[i][0]
+    weight = weights[i][0]
+    
+    if ((restricted.length > 0) && !(restricted.includes(cand))) {continue}
+    
+    if (Object.keys(cands).includes(cand)) {
+      cands[cand] = cands[cand]+weight
+    } else if (cand != '') {cands[cand] = weight}
+  }
+  
+  
+  //Candidates with no first-choice votes
+  whole = spreadsheet.getActiveSheet().getRange(1,c,spreadsheet.getActiveSheet().getLastRow(),spreadsheet.getActiveSheet().getLastColumn()-c+1).getValues()
+  
+  for (i in whole) {
+    for (j in whole[i]) {
+      cand = whole[i][j]
+      if ((!Object.keys(cands).includes(cand)) && (cand != '') && (((restricted.length > 0) && restricted.includes(cand)) || (restricted.length == 0))) {
+        cands[cand] = 0
+      }
+    }
+  }
+  
+  return cands
+}
+
+function ballotsRemove(toRemove) {
+  var spreadsheet = SpreadsheetApp.getActive();
+  
+  whole = spreadsheet.getActiveSheet().getRange(1,3,spreadsheet.getActiveSheet().getLastRow(),spreadsheet.getActiveSheet().getLastColumn()-2).getValues()
+  expWidth = whole[1].length
+  
+  for (i in whole) {
+    whole.splice(i,1,whole[i].filter(cand => !toRemove.includes(cand)))
+    whole.splice(i,1,whole[i].concat(Array(expWidth-whole[i].length).fill('')))
+  }
+  
+  spreadsheet.getActiveSheet().getRange(1,3,spreadsheet.getActiveSheet().getLastRow(),spreadsheet.getActiveSheet().getLastColumn()-2).setValues(whole)
+}
+
+function perc(n,total) {
+  return (Math.round(1000*n/total)/10)+'%'
+}
+
+
+
+function Σ_computeResults() {
+  //Results calculator
+  var spreadsheet = SpreadsheetApp.getActive();
+  var ui = SpreadsheetApp.getUi();
+  spreadsheet.setActiveSheet(spreadsheet.getSheetByName('Ballots'))
+  candidates = new Object()
+  pass = 0
+  
+  nSeats = parseInt(Browser.inputBox("How many seats are to be elected?")) //Quota calculation
+  if (isNaN(parseInt(nSeats))) {nSeats = 1}
+  openSeats = nSeats
+  candidates = countBallots() //Candidates list
+  nCandidatesRunning = Object.keys(candidates).length
+  nVotes = sum(candidates) //Number of votes
+  
+  // QUOTA USED
+  if (nSeats > 1) {
+    switch(quotaNumber) {
+      case 2: //Droop quota
+        quota = Math.floor(nVotes/(nSeats+1))+1
+        break;
+      case 3: //Hagenbach-Bischoff quota
+        quota = nVotes/(nSeats+1)
+        break;
+      case 4: //Imperiali quota
+        quota = quota = nVotes/(nSeats+2)
+        break;
+      default:
+        quota = nVotes/nSeats
+    }
+  }
+  else {quota = nVotes/2} //Simple majority
+  
+  done = false
+  electedCandidates = new Object
+  
+  console.log('Total votes: '+nVotes)
+  console.log('Total seats: '+nSeats)
+  console.log('Quota = '+quota)
+  
+  
+  
+  while (openSeats > 0) { // ===== Loop =====
+    
+    if (nCandidatesRunning <= 0) {break}
+    
+    console.log(candidates)
+    pass = pass+1
+    console.log('Pass n°'+pass)
+    
+    //Sort list of candidates by their votes
+    sortedCandidates = Object.keys(candidates).sort(function(a, b) {return -(candidates[a] - candidates[b])})
+    nCandidates = Object.keys(candidates).length
+    
+    //Text list of candidates
+    textList = '**Pass '+pass+': first-choice votes by candidate (quota = '+Math.round(quota*100)/100+' or '+perc(quota,nVotes)+')**\n\n'
+    exhaustedBallots = nVotes
+    for (i in sortedCandidates) {
+      thatCand = sortedCandidates[i]+' - '+Math.round(candidates[sortedCandidates[i]]*100)/100+' ('+perc(candidates[sortedCandidates[i]],nVotes)+')'
+      if (candidates[sortedCandidates[i]] >= quota) {thatCand = '**'+thatCand+'**'}
+      textList += thatCand+'\n'
+      exhaustedBallots -= candidates[sortedCandidates[i]]
+    }
+    textList += 'Exhausted or used ballots: '+Math.round(exhaustedBallots*100)/100+' ('+perc(exhaustedBallots,nVotes)+')\n'
+    textList += '\n'
+    
+    //If number of candidates == remaining seats
+    if (nCandidates <= openSeats) {
+      //Declare everyone left elected
+      for (i in Object.keys(candidates)) {
+        electedCandidates[Object.keys(candidates)[i]] = pass
+        console.log(Object.keys(candidates)[i]+' is elected')
+        textList = textList + '✅ '+Object.keys(candidates)[i]+' is elected\n'
+        nCandidatesRunning -= 1
+        openSeats -= 1
+      }
+      
+      //Else if top candidate > quota
+    } else if (candidates[sortedCandidates[0]] >= quota) {
+      
+      //If top tie(s)
+      offset = 0
+      tiedCandidates = candidates
+      while (tiedCandidates[sortedCandidates[0]] == tiedCandidates[sortedCandidates[1]]) {
+        //Add all to tie
+        nTie = candidates[sortedCandidates[0]]
+        tied = {}
+        for (i in Object.keys(candidates)) {
+          i = Object.keys(candidates)[i]
+          if (candidates[i] == nTie) {tied[i] = nTie}
+        }
+        
+        //Tiebreaker (Bucklin)
+        offset = offset + 1
+        if (offset >= spreadsheet.getActiveSheet().getLastColumn()-2) {break}
+        tiedCandidates = countBallots(offset,Object.keys(tied))
+        sortedCandidates = Object.keys(tiedCandidates).sort(function(a, b) {return -(tiedCandidates[a] - tiedCandidates[b])})
+      }
+      
+      //Top candidate elected
+      TBR = sortedCandidates[0]
+      electedCandidates[TBR] = pass
+      console.log(TBR+' ('+candidates[TBR]+' votes, '+perc(candidates[TBR],nVotes)+') reaches the quota and is elected')
+      textList = textList + '✅ '+TBR+' reaches the quota and is elected\n'
+      nCandidatesRunning -= 1
+      openSeats -= 1
+      
+      //Votes reweighted
+      if (openSeats > 0) {
+        factor = (candidates[TBR] - quota)/candidates[TBR]
+        reweightBallots(factor,TBR)
+      }
+      
+      ballotsRemove([TBR])
+      
+    } else {
+      
+      //If bottom tie(s)
+      offset = 0
+      tiedCandidates = candidates
+      while (tiedCandidates[sortedCandidates.slice(-1)[0]] == tiedCandidates[sortedCandidates.slice(-2)[0]]) {
+        //Add all to tie
+        nTie = tiedCandidates[sortedCandidates.slice(-1)[0]]
+        tied = {}
+        for (i in Object.keys(tiedCandidates)) {
+          i = Object.keys(tiedCandidates)[i]
+          if (tiedCandidates[i] == nTie) {tied[i] = nTie}
+        }
+        
+        //Tiebreaker (Bucklin)
+        offset = offset + 1
+        if (offset >= spreadsheet.getActiveSheet().getLastColumn()-2) {break}
+        
+        //If all are at zero
+        candsToRemove = []
+        if ((nTie == 0) && ((Object.keys(candidates).length-Object.keys(tied).length) >= openSeats)) {
+          for (i in Object.keys(tied)) {
+            i = Object.keys(tied)[i]
+            console.log(i+' is eliminated')
+            textList = textList + '❌ '+i+' is eliminated\n'
+            candsToRemove.push(i)
+            nCandidatesRunning -= 1
+          }
+          
+          ballotsRemove(candsToRemove)
+          
+          tied = {}
+          offset = 0
+        }
+        
+        tiedCandidates = countBallots(offset,Object.keys(tied))
+        sortedCandidates = Object.keys(tiedCandidates).sort(function(a, b) {return -(tiedCandidates[a] - tiedCandidates[b])})
+      }
+      
+      //Bottom candidate eliminated
+      //Put bottom candidate as TBR
+      TBR = sortedCandidates.slice(-1)[0]
+      console.log(TBR+' is eliminated')
+      textList = textList + '❌ '+TBR+' is eliminated\n'
+      nCandidatesRunning -= 1
+      
+      ballotsRemove([TBR])
+      
+      if (openSeats == 0) {continue}
+    }
+    
+    if (nSeats > 1) {
+      if (openSeats == 0) {
+        textList += 'All seats have been filled'
+      } else if (openSeats == 1) {
+        textList += '1 seat remaining'
+      } else {textList += openSeats + ' seats remaining'}
+    }
+      
+    ui.alert('Results of pass n°'+pass,textList,ui.ButtonSet.OK)
+    
+    if (openSeats <= 0) {break}
+    
+    //Re-count the ballots
+    candidates = countBallots()
+  }
+  
+  if (nSeats > 1) {
+    finalToPrint = '**✅ Elected candidates**\n'
+    for (i in Object.keys(electedCandidates)) {
+      cand = Object.keys(electedCandidates)[i]
+      passElected = electedCandidates[cand]
+      finalToPrint += cand+' elected on pass '+passElected+'\n'
+    }
+    if (openSeats > 0) {
+      finalToPrint += openSeats+' seats remain vacant'
+    }
+  ui.alert(finalToPrint)
+  }
+		}</textarea>
+		<input onClick="copyText()">Click to copy</input>
+		
+		<p>In case of a problem, bug, question, or suggestion, ask me! <a href="https://twitter.com/Julio974fr">@Julio974fr</a> on Twitter.</p>
 </body>
 </html>
