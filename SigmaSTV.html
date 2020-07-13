@@ -24,20 +24,18 @@
 	</ul>
 	<h2>How to use it</h2>
 	<h3>From Google Forms</h3>
-	<p style="margin-left:40px;"><span style="border-left:5px solid gainsboro;padding-left:2.5px;">In the "answers" section of your form, click on the green icon "display the results in Google Sheets".</span></p>
+	<p style="margin-left:40px;"><span style="border-left:5px solid gainsboro;padding-left:2.5px;">In the "answers" section of your form, click on the green icon "display the results in Google Sheets". >Install the script</span></p>
 	<h3>From raw data</h3>
-	<p style="margin-left:40px;"><span style="border-left:5px solid gainsboro;padding-left:2.5px;">Create an empty sheet named "Ballots" and enter the ballots one type per line. Skip the first column of each line (it is just use for manually identifying the ballots). Enter on the B column the number of ballots of the kind, and enter in the following columns the ordered list of candidates on the ballots. For example (| to delimit the columns), one line might read: " | 86 | Alice | Bob | Charlie" to mean 86 ballots ranked Alice in first, Bob in second, and Charlie in third.</span></p>
+	<p style="margin-left:40px;"><span style="border-left:5px solid gainsboro;padding-left:2.5px;">Create an empty sheet named "Ballots" and enter the ballots one type per line. Skip the first column of each line (it is just use for manually identifying the ballots). Enter on the B column the number of ballots of the kind, and enter in the following columns the ordered list of candidates on the ballots. For example (| to delimit the columns), one line might read: " | 86 | Alice | Bob | Charlie" to mean 86 ballots ranked Alice in first, Bob in second, and Charlie in third. >Install the script</span></p>
 	<h3>Install the script</h3>
-	<p style="margin-left:40px;"><span style="border-left:5px solid gainsboro;padding-left:2.5px;">In the top menu, click on Tools>Scripts editor. Paste the script and possibly change the quota used by changing the value indicated. Back in the spreadsheet, click on Tools>Macros>Import and select the two functions with a sigma at the beginning (Σ_convertAnswers and Σ_computeResults).</span></p>
+	<p style="margin-left:40px;"><span style="border-left:5px solid gainsboro;padding-left:2.5px;">In the top menu, click on Tools>Scripts editor. Paste the script and possibly change the quota used by changing the value indicated. Back in the spreadsheet, click on Tools>Macros>Import and select the two functions with a sigma at the beginning (Σ_convertAnswers and Σ_computeResults). (if from Google forms >Convert the ballots, if from raw data >Compute the results)</span></p>
 	<h3>Convert the answers</h3>
-	<p style="margin-left:40px;"><span style="border-left:5px solid gainsboro;padding-left:2.5px;">You can skip this step if you manually inputed the ballots from raw data. If the ballots are exported from Google Sheets: select the columns corresponding to the candidates of the race to compute the results of (if the candidates of the race are on the columns E to J, select the columns from E to J included), and select Tools>Macros>Σ_convertAnswers. Check all the candidates are there, and click "yes" to start. This script will overwrite the "Ballots" sheet. Once the script is finished, all the ballots are converted for this specific race, you can now move to the next part:</span></p>
+	<p style="margin-left:40px;"><span style="border-left:5px solid gainsboro;padding-left:2.5px;">You can skip this step if you manually inputed the ballots from raw data. If the ballots are exported from Google Sheets: select the columns corresponding to the candidates of the race to compute the results of (if the candidates of the race are on the columns E to J, select the columns from E to J included), and select Tools>Macros>Σ_convertAnswers. Check all the candidates are there, and click "yes" to start. This script will overwrite the "Ballots" sheet. Once the script is finished, all the ballots are converted for this specific race, you can now move to the final part. >Compute the results</span></p>
 	<h3>Compute the results</h3>
 	<p style="margin-left:40px;"><span style="border-left:5px solid gainsboro;padding-left:2.5px;">Click on Tools>Macros>Σ_computeResults, and enter the number of seats to be elected in the prompting window. Wait for the script to count and re-attribute the ballots. At the end of each count, a window will open with the results after the count (it is automatically formatted for copy-pasting on Discord). After the script is done, you can press Ctrl+Z to see previous count statuses and manually check the counts if needed.</span></p>
 
 	<h2>The script</h2>
-	<select name="versionNumber" size="1">
-		<option>Version 1.0 (2020-06-05)</option>
-	</select>
+	<p>Version 1.0.1 (2020-07-13)</p>
 	<br>
 	<textarea id="area">/** @OnlyCurrentDoc */
 
@@ -166,7 +164,7 @@ function Σ_convertAnswers() {
     date = dates[i][0]
     
     for (i in line) { //Parsing each cell in a row
-      rank = line[i]
+      rank = line[i].replace(/\D/g,'');
       if (rank == '') {continue}
       candidate = candidatesList[i]
       ordered.splice(rank-1,1,candidate)
@@ -325,7 +323,7 @@ function Σ_computeResults() {
     exhaustedBallots = nVotes
     for (i in sortedCandidates) {
       thatCand = sortedCandidates[i]+' - '+Math.round(candidates[sortedCandidates[i]]*100)/100+' ('+perc(candidates[sortedCandidates[i]],nVotes)+')'
-      if (candidates[sortedCandidates[i]] >= quota) {thatCand = '**'+thatCand+'**'}
+      if ((candidates[sortedCandidates[i]] >= quota) || (nCandidates <= openSeats)) {thatCand = '**'+thatCand+'**'}
       textList += thatCand+'\n'
       exhaustedBallots -= candidates[sortedCandidates[i]]
     }
@@ -463,6 +461,8 @@ function Σ_computeResults() {
 		}</textarea>
 		<br>
 		<button type="button" onClick="copyText()">Click to copy!</button>
+		<br>
+		<p><b>Changelog:</b><br>1.0 (2020-06-05) Initial version<br>1.0.1 (2020-07-13) Fixes for the ballots conversion and displaying of elected candidates</p>
 		<br>
 		<p>In case of a problem, bug, question, or suggestion, ask me! <a href="https://twitter.com/Julio974fr">@Julio974fr</a> on Twitter.</p>
 </body>
