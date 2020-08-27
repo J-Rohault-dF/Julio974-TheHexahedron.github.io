@@ -17,22 +17,14 @@
 	<p>ΣSTV (pronounce Sigma-S-T-V) is a script for Google Sheets and Google Form I developped in May 2020, originally planned for a mock elections community. <b>It computes the results for elections using STV, RCV, AV, IRV, call it as you want, in general Ranked-Choice Transferable-Ballots systems.</b></p>
 	<ul>
 		<li>Multiple quotas are available for use for multiple-seats elections, namely the <a href="https://en.wikipedia.org/wiki/Hare_quota">Hare quota</a>, the <a href="https://en.wikipedia.org/wiki/Droop_quota">Droop quota</a>, the <a href="https://en.wikipedia.org/wiki/Hagenbach-Bischoff_quota">Hagenbach-Bischoff quota</a>, and the <a href="https://en.wikipedia.org/wiki/Imperiali_quota">Imperiali quota</a>.</li>
-		<li>Single-winner elections elect the candidate to reach the overall majority.</li>
+		<li>Single-winner elections elect the candidate reaching the overall majority.</li>
 		<li>The surplus allocation is done using the <a href="https://en.wikipedia.org/wiki/Counting_single_transferable_votes#Gregory">Gregory method</a>, which may lead to fractional votes in further counts.</li>
 		<li>In case of a tie, the script breaks the tie using the Bucklin system: it counts second choices, then if the tie persists it counts the third choices, etc. If the tie persists to the end, the script chooses a candidate at random.</li>
-		<li style="color:#E00">The script must run in under 6 minutes, or Google Scripts will automatically stop it. If it happens, rewind back to the initial state using Ctrl+Z and start again.</li>
+		<li style="color:#E00"><b>The script must run in under 6 minutes</b>, or Google Scripts will automatically stop it. If it happens, rewind back to the initial state using Ctrl+Z and start again.</li>
 	</ul>
 	<h2>How to use it</h2>
-	<h3>From Google Forms</h3>
-	<p style="margin-left:40px;"><span style="border-left:5px solid gainsboro;padding-left:2.5px;">In the "answers" section of your form, click on the green icon "display the results in Google Sheets". >Install the script</span></p>
-	<h3>From raw data</h3>
-	<p style="margin-left:40px;"><span style="border-left:5px solid gainsboro;padding-left:2.5px;">Create an empty sheet named "Ballots" and enter the ballots one type per line. Skip the first column of each line (it is just use for manually identifying the ballots). Enter on the B column the number of ballots of the kind, and enter in the following columns the ordered list of candidates on the ballots. For example (| to delimit the columns), one line might read: " | 86 | Alice | Bob | Charlie" to mean 86 ballots ranked Alice in first, Bob in second, and Charlie in third. >Install the script</span></p>
-	<h3>Install the script</h3>
-	<p style="margin-left:40px;"><span style="border-left:5px solid gainsboro;padding-left:2.5px;">In the top menu, click on Tools>Scripts editor. Paste the script and possibly change the quota used by changing the value indicated. Back in the spreadsheet, click on Tools>Macros>Import and select the two functions with a sigma at the beginning (Σ_convertAnswers and Σ_computeResults). (if from Google forms >Convert the ballots, if from raw data >Compute the results)</span></p>
-	<h3>Convert the answers</h3>
-	<p style="margin-left:40px;"><span style="border-left:5px solid gainsboro;padding-left:2.5px;">You can skip this step if you manually inputed the ballots from raw data. If the ballots are exported from Google Sheets: select the columns corresponding to the candidates of the race to compute the results of (if the candidates of the race are on the columns E to J, select the columns from E to J included), and select Tools>Macros>Σ_convertAnswers. Check all the candidates are there, and click "yes" to start. This script will overwrite the "Ballots" sheet. Once the script is finished, all the ballots are converted for this specific race, you can now move to the final part. >Compute the results</span></p>
-	<h3>Compute the results</h3>
-	<p style="margin-left:40px;"><span style="border-left:5px solid gainsboro;padding-left:2.5px;">Click on Tools>Macros>Σ_computeResults, and enter the number of seats to be elected in the prompting window. Wait for the script to count and re-attribute the ballots. At the end of each count, a window will open with the results after the count (it is automatically formatted for copy-pasting on Discord). After the script is done, you can press Ctrl+Z to see previous count statuses and manually check the counts if needed.</span></p>
+    <a href="SigmaSTVg.html">How to use it from Google Forms</a><br>
+    <a href="SigmaSTVr.html">How to use it from raw data</a>
 
 	<h2>The script</h2>
 	<p>Version 1.0.1 (2020-07-13)</p>

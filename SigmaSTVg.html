@@ -1,0 +1,25 @@
+<html>
+<head>
+	<title>SigmaSTV — Julio974's website</title>
+	
+	<link rel="stylesheet" href="styles.css">
+    
+</head>
+<body>
+	<a href="SigmaSTV.html">Retour à la page principale de ΣSTV / Back to the ΣSTV main page</a>
+	<h1>How to use ΣSTV with Google Forms</h1>
+    
+    <ol>
+        <li>In the "answers" section of your form, click on the green icon "display the results in Google Sheets".</li>
+        <li>In the top menu, click on <code>Tools>Scripts editor</code>.</li>
+        <li>In the scripts editor, paste the ΣSTV script. You can also change the quota (by changing the needed value).</li>
+        <li>Back in the spreadsheet, click on <code>Tools>Macros>Import</code> and select the two functions with a sigma at the beginning (Σ_convertAnswers and Σ_computeResults).</li>
+        <li>Select the columns corresponding to the candidates of the race (for example, if the candidates of the race are on the columns E to J, select the columns from E to J included)</li>
+        <li>Click on <code>Tools>Macros>Σ_convertAnswers</code> to convert the ballots. Check all the needed candidates are there, then click on "yes" to convert the ballots. If there is a "Ballots" sheet, it will be overwritten.</li>
+        <li>Click on <code>Tools>Macros>Σ_computeResults</code>, and enter the number of seats to be elected in the prompting window.</li>
+        <li>Wait for the script to count and re-attribute the ballots. At the end of each count, a window will open with the results after the count (it is automatically formatted for copy-pasting on Discord). Do not wait too much on the results windows, as the script will automatically stop after 6 minutes. A final window with the list of elected candidates will be shown at the end.</li>
+        <li>After the script is done, you can press Ctrl+Z multiple times to see previous count statuses and manually check the counts if needed.</li>
+    </ol>
+    
+</body>
+</html>

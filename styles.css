@@ -10,6 +10,10 @@ a.broken:visited {
 	color: #a55858;
 }
 
+li {
+    margin-top: 10px;
+}
+
 table.pollingtable {font-size:95%; line-height:14px; text-align:center; border-bottom: 2px solid #F0F0F0;}
 /* f for full color, s for semi (midpoint blend between the color and white), b for background (lightest of 10 midpoints between the color and white) */
 caption {background-color:#F0F0F0}

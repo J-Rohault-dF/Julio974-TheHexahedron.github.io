@@ -1,0 +1,26 @@
+<html>
+<head>
+	<title>SigmaSTV — Julio974's website</title>
+	
+	<link rel="stylesheet" href="styles.css">
+    
+</head>
+<body>
+	<a href="SigmaSTV.html">Retour à la page principale de ΣSTV / Back to the ΣSTV main page</a>
+	<h1>How to use ΣSTV with raw ballots data</h1>
+    
+    <ol>
+        <li>Create an empty sheet named "Ballots" and enter the ballots one type per line. Skip the first column of each line (it is just use for manually identifying the ballots). Enter on the B column the number of ballots of the kind, and enter in the following columns the ordered list of candidates on the ballots.</li>
+        <p>For example, if 86 ballots rank Alice in first, Bob in second, and Charlie in third, the line should look like :</p>
+        <table style="border: 1px solid black"><tr><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th></tr><tr><td style="border: 1px solid black; color:transparent">aaa</td><td style="border: 1px solid black">86</td><td style="border: 1px solid black">Alice</td><td style="border: 1px solid black">Bob</td><td style="border: 1px solid black">Charlie</td></tr></table>
+        <p>I advise you to make a copy of the sheet (as the script will affect the sheet used, though you can get back to the original state with Ctrl+Z).</p>
+        <li>In the top menu, click on <code>Tools>Scripts editor</code>.</li>
+        <li>In the scripts editor, paste the ΣSTV script. You can also change the quota (by changing the needed value).</li>
+        <li>Back in the spreadsheet, click on <code>Tools>Macros>Import</code> and select the two functions with a sigma at the beginning (Σ_convertAnswers and Σ_computeResults).</li>
+        <li>Click on <code>Tools>Macros>Σ_computeResults</code>, and enter the number of seats to be elected in the prompting window.</li>
+        <li>Wait for the script to count and re-attribute the ballots. At the end of each count, a window will open with the results after the count (it is automatically formatted for copy-pasting on Discord). Do not wait too much on the results windows, as the script will automatically stop after 6 minutes. A final window with the list of elected candidates will be shown at the end.</li>
+        <li>After the script is done, you can press Ctrl+Z multiple times to see previous count statuses and manually check the counts if needed.</li>
+    </ol>
+    
+</body>
+</html>
