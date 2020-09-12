@@ -5,7 +5,7 @@ body {
 a.broken {
 	color: #ba0000;
 }
-
+<<
 a.broken:visited {
 	color: #a55858;
 }
@@ -49,10 +49,19 @@ td.cLFIs {background-color:#E692A1; font-weight:bold}
 td.cLFIb {background-color:#FAEBEE}
 td.cEELVf {background-color:#00C000; font-weight:bold}
 td.cEELVs {background-color:#80E080; font-weight:bold}
-td.cEELVb {background-color:#E8F9E8}
+td.cEELVb {background-color:#F3FFF3}
+td.cDVEf {background-color:#77ff77; font-weight:bold}
+td.cDVEs {background-color:#BBFFBB; font-weight:bold}
+td.cDVEb {background-color:#E8F9E8}
 td.cDVCf {background-color:#FAC577; font-weight:bold}
 td.cDVCs {background-color:#FDE2BB; font-weight:bold}
 td.cDVCb {background-color:#FFFAF3}
+td.cEXGf {background-color:#bb0000; font-weight:bold}
+td.cEXGs {background-color:#DD8080; font-weight:bold}
+td.cEXGb {background-color:#F9E8E8}
 td.cUPRf {background-color:#118088; font-weight:bold}
 td.cUPRs {background-color:#88C0C4; font-weight:bold}
 td.cUPRb {background-color:#E9F3F4}
+td.cDIVf {background-color:#eeeeee; font-weight:bold}
+td.cDIVs {background-color:#f7f7f7; font-weight:bold}
+td.cDIVb {background-color:#FDFDFD}
